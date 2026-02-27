@@ -31,7 +31,7 @@ const Header = () => {
     <nav
       className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ease-in-out ${
         isScrolled
-          ? "py-1.5 bg-white/90 backdrop-blur-md shadow-md"
+          ? "py-1.5 bg-white/90 backdrop-blur-md shadow-md rounded-b-3xl"
           : "py-3 bg-transparent"
       }`}
     >
