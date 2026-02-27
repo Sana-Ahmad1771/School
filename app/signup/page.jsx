@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import { ArrowRight, Lock, User, Mail, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Lock, User, Mail, Eye, EyeOff, GraduationCap } from "lucide-react";
+import Link from "next/link";
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -8,118 +9,119 @@ const SignUpPage = () => {
   return (
     <section className="min-h-screen bg-white flex flex-col lg:flex-row">
       
-      {/* Left Side: Visual/Branding (Matches Login) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-black relative p-16 flex-col justify-between overflow-hidden">
+      {/* Left Side: Branding (Matches Login) */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[#1F1A55] relative p-16 flex-col justify-between overflow-hidden">
         <img 
           src="/images/hero2.jpg" 
-          alt="Campus Architecture" 
-          className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale"
+          alt="Afaq School Campus" 
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
         />
         
         <div className="relative z-10">
-          <h1 className="text-white text-3xl font-black tracking-tighter uppercase">
-            University. <br /> Admissions Portal
-          </h1>
+          <Link href="/" className="flex items-center gap-3">
+             <div className="bg-[#9C1D20] p-2 rounded-lg">
+                <GraduationCap className="text-white" size={32} />
+             </div>
+             <h1 className="text-white text-2xl font-black tracking-tighter uppercase leading-none">
+                Afaq School <br /> <span className="text-[#9C1D20] text-sm tracking-[0.3em]">& College</span>
+             </h1>
+          </Link>
         </div>
 
         <div className="relative z-10 max-w-md">
-          <h2 className="text-white text-[50px] font-bold leading-[1] tracking-tighter uppercase mb-6">
-            Join the <br /> Next Generation <br /> of Leaders.
+          <h2 className="text-white text-[55px] font-bold leading-[1] tracking-tighter uppercase mb-6">
+            Join Our <br /> <span className="text-[#9C1D20]">Academic</span> <br /> Community.
           </h2>
-          <p className="text-white/60 text-lg leading-relaxed">
-            Create your account to start your application, track your progress, and join our global academic community.
+          <p className="text-white/70 text-lg leading-relaxed font-medium">
+            Create an account to begin the admission process for the 2026-27 session and track your child's application status.
           </p>
         </div>
 
-        <div className="relative z-10 flex gap-10 text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">
-          <span>© 2026 Modern University</span>
-          <a href="#" className="hover:text-white transition-colors">Support</a>
-          <a href="#" className="hover:text-white transition-colors">Privacy</a>
+        <div className="relative z-10 flex gap-10 text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">
+          <span>© 2026 Afaq School Gulabad</span>
+          <Link href="#" className="hover:text-[#9C1D20] transition-colors">Help</Link>
+          <Link href="#" className="hover:text-[#9C1D20] transition-colors">Privacy</Link>
         </div>
       </div>
 
       {/* Right Side: Sign Up Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-16 lg:p-24 bg-white">
-        <div className="w-full max-w-md">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-16 lg:p-24 bg-[#F8F9FB]">
+        <div className="w-full max-w-md bg-white p-10 md:p-14 rounded-[2.5rem] shadow-xl shadow-[#1F1A55]/5">
           
-          {/* Header */}
           <div className="mb-12">
-            <span className="text-xs font-black uppercase tracking-[0.3em] text-gray-400 block mb-4">
-              Registration
+            <span className="text-xs font-black uppercase tracking-[0.3em] text-[#9C1D20] block mb-4">
+              New Registration
             </span>
-            <h3 className="text-[40px] font-bold tracking-tighter text-black uppercase leading-none">
+            <h3 className="text-[35px] font-bold tracking-tighter text-[#1F1A55] uppercase leading-none">
               Create Account
             </h3>
           </div>
 
-          {/* Form */}
-          <form className="space-y-8">
-            {/* Student ID or Email */}
+          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            {/* Full Name */}
             <div className="space-y-2 group">
-              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-focus-within:text-black transition-colors">
-                Student ID or Email
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-focus-within:text-[#9C1D20] transition-colors">
+                Guardian / Student Name
               </label>
-              <div className="flex items-center border-b-2 border-gray-200 group-focus-within:border-black transition-all py-2">
-                <Mail size={18} className="text-gray-400 mr-4" />
+              <div className="flex items-center border-b-2 border-gray-100 group-focus-within:border-[#9C1D20] transition-all py-3">
+                <User size={18} className="text-gray-300 mr-4" />
                 <input 
                   type="text" 
-                  placeholder="e.g. STU12345 or email"
-                  className="w-full bg-transparent border-none outline-none text-black font-bold placeholder:text-gray-200"
+                  placeholder="Enter full name"
+                  className="w-full bg-transparent border-none outline-none text-[#1F1A55] font-bold placeholder:text-gray-200"
+                />
+              </div>
+            </div>
+
+            {/* Email */}
+            <div className="space-y-2 group">
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-focus-within:text-[#9C1D20] transition-colors">
+                Email Address
+              </label>
+              <div className="flex items-center border-b-2 border-gray-100 group-focus-within:border-[#9C1D20] transition-all py-3">
+                <Mail size={18} className="text-gray-300 mr-4" />
+                <input 
+                  type="email" 
+                  placeholder="name@example.com"
+                  className="w-full bg-transparent border-none outline-none text-[#1F1A55] font-bold placeholder:text-gray-200"
                 />
               </div>
             </div>
 
             {/* Password */}
             <div className="space-y-2 group">
-              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-focus-within:text-black transition-colors">
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-focus-within:text-[#9C1D20] transition-colors">
                 Password
               </label>
-              <div className="flex items-center border-b-2 border-gray-200 group-focus-within:border-black transition-all py-2">
-                <Lock size={18} className="text-gray-400 mr-4" />
+              <div className="flex items-center border-b-2 border-gray-100 group-focus-within:border-[#9C1D20] transition-all py-3">
+                <Lock size={18} className="text-gray-300 mr-4" />
                 <input 
                   type={showPassword ? "text" : "password"} 
-                  placeholder="Create a password"
-                  className="w-full bg-transparent border-none outline-none text-black font-bold placeholder:text-gray-200"
+                  placeholder="Create password"
+                  className="w-full bg-transparent border-none outline-none text-[#1F1A55] font-bold placeholder:text-gray-200"
                 />
                 <button 
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-gray-400 hover:text-black transition-colors"
+                  className="text-gray-300 hover:text-[#9C1D20] transition-colors"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
 
-            {/* Confirm Password */}
-            <div className="space-y-2 group">
-              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-focus-within:text-black transition-colors">
-                Confirm Password
-              </label>
-              <div className="flex items-center border-b-2 border-gray-200 group-focus-within:border-black transition-all py-2">
-                <Lock size={18} className="text-gray-400 mr-4" />
-                <input 
-                  type="password" 
-                  placeholder="Repeat password"
-                  className="w-full bg-transparent border-none outline-none text-black font-bold placeholder:text-gray-200"
-                />
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <button className="w-full bg-black text-white py-5 rounded-full font-black uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-4 hover:bg-gray-900 transition-all group mt-4">
-              Create Account
-              <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+            <button className="w-full bg-[#1F1A55] text-white py-5 rounded-full font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-4 hover:bg-[#9C1D20] shadow-lg transition-all group mt-4">
+              Register Now
+              <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
             </button>
           </form>
 
-          {/* Footer of Form */}
           <div className="mt-12 text-center">
-            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">
+            <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">
               Already have an account?{' '}
-              <a href="/login" className="text-black underline underline-offset-4 hover:opacity-70 transition-all font-black">
+              <Link href="/login" className="text-[#9C1D20] underline underline-offset-4 font-black">
                 Login Here
-              </a>
+              </Link>
             </p>
           </div>
 
