@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Phone, MapPin, MessageCircle, Clock, ArrowUpRight } from "lucide-react";
 
 const ContactHero = () => {
   const [activeImage, setActiveImage] = useState(0);
@@ -14,7 +13,7 @@ const ContactHero = () => {
   }, [images.length]);
 
   return (
-    <div className="relative h-[80vh] w-full overflow-hidden bg-[#1F1A55] text-white">
+    <div className="relative h-[80dvh] w-full overflow-hidden bg-[#1F1A55] text-white">
       {/* Background Image Slider */}
       {images.map((img, index) => (
         <div
@@ -35,34 +34,44 @@ const ContactHero = () => {
       ))}
 
       {/* Main Container */}
-      <div className="relative z-20 h-full max-w-[1800px] mx-auto px-8 lg:px-10 flex items-end pb-20">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end w-full gap-10">
-          <div className="max-w-4xl">
-            <span className="bg-[#9C1D20] text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-4 inline-block">
+      {/* Updated: Added items-center for mobile, items-end for lg */}
+      <div className="relative z-20 h-full max-w-[1800px] mx-auto px-6 sm:px-8 lg:px-10 flex items-center lg:items-end pb-12 md:pb-20 lg:pb-28">
+        
+        {/* Updated: Added items-center and text-center for mobile */}
+        <div className="flex flex-col lg:flex-row justify-between items-center lg:items-end w-full gap-8 lg:gap-10 text-center lg:text-left">
+          
+          {/* Left Side: Heading */}
+          <div className="max-w-4xl w-full">
+            <span className="bg-[#9C1D20] text-white px-4 py-1 rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest mb-4 inline-block shadow-lg">
               Get In Touch
             </span>
-            <h1 className="text-[clamp(50px,8vw,100px)] text-white font-poppins uppercase font-black leading-[0.85] tracking-tighter">
+            <h1 className="text-[clamp(33px,10vw,100px)] text-white font-poppins uppercase font-black leading-[0.9] sm:leading-[0.85] tracking-tighter">
               Let's Start A <br /> 
               <span className="text-[#FACC15]">Conversation.</span>
             </h1>
           </div>
           
-          <div className="max-w-sm mb-4">
-             <div className="flex gap-3">
-                {images.map((_, i) => (
+          {/* Right Side: Slider Nav */}
+          <div className="w-full lg:max-w-sm mb-4">
+            {/* Updated: justify-center for mobile */}
+            <div className="flex gap-3 justify-center lg:justify-end">
+              {images.map((_, i) => (
                 <button
-                    key={i}
-                    onClick={() => setActiveImage(i)}
-                    className={`h-1.5 transition-all duration-500 rounded-full ${
+                  key={i}
+                  onClick={() => setActiveImage(i)}
+                  className={`h-1.5 transition-all duration-500 rounded-full ${
                     i === activeImage ? "w-10 bg-[#FACC15]" : "w-3 bg-white/30"
-                    }`}
+                  }`}
+                  aria-label={`Go to slide ${i + 1}`}
                 />
-                ))}
+              ))}
             </div>
           </div>
+
         </div>
       </div>
     </div>
   );
 };
+
 export default ContactHero;
