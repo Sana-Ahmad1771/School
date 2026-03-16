@@ -15,7 +15,38 @@ import { usePathname } from "next/navigation";
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // Updated state to hold login status and profile image
+  const [user, setUser] = useState({
+    isLoggedIn: false,
+    profileImage: "/images/director.jpg",
+  });
+  
   const pathname = usePathname();
+
+  // Logic to sync user data from localStorage
+  useEffect(() => {
+    const syncUser = () => {
+      const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+      const storedData = localStorage.getItem("student");
+      
+      if (storedData) {
+        const student = JSON.parse(storedData);
+        setUser({
+          isLoggedIn: loggedIn,
+          profileImage: student.profileImage || "/images/director.jpg",
+        });
+      } else {
+        setUser({ isLoggedIn: loggedIn, profileImage: "/images/director.jpg" });
+      }
+    };
+
+    syncUser();
+
+    // Listen for storage changes (updates header if user signs up in another tab)
+    window.addEventListener("storage", syncUser);
+    return () => window.removeEventListener("storage", syncUser);
+  }, [pathname]); // Re-sync on route change
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -75,7 +106,7 @@ const Header = () => {
             >
               <Image
                 src="/images/logo.png"
-                alt="Afaq School & College Logo"
+                alt="Logo"
                 fill
                 className="object-contain"
                 priority
@@ -114,7 +145,7 @@ const Header = () => {
 
           <div className="flex items-center gap-4 relative z-[210]">
             {/* Desktop CTA Button */}
-            <Link href="/login" className="hidden sm:block">
+            <Link href={user.isLoggedIn ? "/profile" : "/login"} className="hidden sm:block">
               <button
                 className={`relative cursor-pointer flex items-center gap-2 px-5 py-2 rounded-full font-bold transition-all duration-300 text-[11px] uppercase tracking-widest overflow-hidden group ${
                   isScrolled
@@ -122,13 +153,28 @@ const Header = () => {
                     : "bg-white text-[#1F1A55] hover:bg-white/90"
                 }`}
               >
-                <span className="relative z-10">Student Portal</span>
+                <span className="relative z-10">
+                  {user.isLoggedIn ? "My Profile" : "Student Portal"}
+                </span>
                 <ArrowUpRight
                   size={14}
                   className="relative z-10 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 />
               </button>
             </Link>
+
+            {/* --- THE PROFILE IMAGE SECTION --- */}
+            {user.isLoggedIn && (
+              <Link href="/profile" className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full overflow-hidden border-2 border-[#9C1D20] hover:scale-105 transition-transform">
+                <Image
+                  src={user.profileImage}
+                  alt="Profile"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-cover"
+                />
+              </Link>
+            )}
 
             {/* Mobile Toggle */}
             <button
@@ -155,10 +201,7 @@ const Header = () => {
           isMobileMenuOpen ? "translate-y-0" : "-translate-y-full"
         }`}
       >
-        {/* Changed to overflow-y-auto to allow scrolling on small phones */}
         <div className="absolute inset-0 bg-[#1F1A55] flex flex-col overflow-y-auto overflow-x-hidden">
-          
-          {/* Menu Header (Sticky-like behavior) */}
           <div className="flex-none flex items-center justify-between px-8 py-8 border-b border-white/5">
             <div className="flex flex-col">
               <span className="text-white font-black tracking-tighter text-lg leading-none">
@@ -176,7 +219,6 @@ const Header = () => {
             </button>
           </div>
 
-          {/* Nav Links Area (Flex-1 ensures it pushes footer down) */}
           <div className="flex-1 flex flex-col justify-center px-10 py-10">
             <nav className="flex flex-col space-y-4">
               {navItems.map((item, index) => {
@@ -200,7 +242,6 @@ const Header = () => {
             </nav>
           </div>
 
-          {/* Socials & Portal Footer (Flex-none prevents it from shrinking) */}
           <div
             className={`flex-none p-10 transition-all duration-700 delay-500 ${
               isMobileMenuOpen
@@ -210,12 +251,12 @@ const Header = () => {
           >
             <div className="flex flex-col gap-8">
               <Link
-                href="/login"
+                href={user.isLoggedIn ? "/profile" : "/login"}
                 className="w-full"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <button className="w-full bg-[#9C1D20] text-white py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 active:scale-[0.98] transition-all shadow-xl shadow-black/20">
-                  Enter Student Portal <ArrowUpRight size={18} />
+                  {user.isLoggedIn ? "View My Profile" : "Enter Student Portal"} <ArrowUpRight size={18} />
                 </button>
               </Link>
 

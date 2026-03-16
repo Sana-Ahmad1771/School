@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   Lock,
@@ -11,6 +12,7 @@ import {
 import Link from "next/link";
 
 const LoginPage = () => {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -91,7 +93,11 @@ const LoginPage = () => {
 
           <form
             className="space-y-6 md:space-y-8"
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={(e) => {
+              e.preventDefault();
+              localStorage.setItem("isLoggedIn", "true");
+              router.push("/profile");
+            }}
           >
             {/* Input: ID */}
             <div className="space-y-2 group">
