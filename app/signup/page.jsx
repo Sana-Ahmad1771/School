@@ -14,7 +14,7 @@ import {
   MapPin,
   Calendar,
   Camera,
-  Upload,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -22,12 +22,12 @@ const SignUpPage = () => {
   const router = useRouter();
   const fileInputRef = useRef(null);
 
-  // Flow State
+  // States
   const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [error, setError] = useState("");
 
-  // Form Data State
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -39,7 +39,58 @@ const SignUpPage = () => {
   });
 
   const handleChange = (e) => {
+    setError(""); // Clear error when typing
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // --- VALIDATION LOGIC ---
+  const isStepValid = () => {
+    if (step === 1) {
+      return formData.name.trim() !== "" && 
+             formData.email.includes("@") && 
+             formData.password.length >= 6;
+    }
+    if (step === 2) {
+      return formData.phone.trim() !== "" && 
+             formData.dob !== "" && 
+             formData.class.trim() !== "" &&
+             formData.address.trim() !== "";
+    }
+    if (step === 3) {
+      return imagePreview !== null;
+    }
+    return false;
+  };
+
+  const handleNextStep = () => {
+    if (isStepValid()) {
+      setError("");
+      setStep(step + 1);
+    } else {
+      if (step === 1) setError("Please enter name, a valid email, and a password (min 6 chars).");
+      if (step === 2) setError("All personal details are required.");
+    }
+  };
+
+  const handleFinalSubmit = (e) => {
+    e.preventDefault();
+    if (!isStepValid()) {
+      setError("Please upload a profile photo to complete registration.");
+      return;
+    }
+
+    const studentData = {
+      ...formData,
+      id: `ASC-${Math.floor(1000 + Math.random() * 9000)}`,
+      profileImage: imagePreview,
+      joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+      attendance: "100%",
+      gpa: "N/A",
+    };
+
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("student", JSON.stringify(studentData));
+    router.push("/profile");
   };
 
   const handleImageChange = (e) => {
@@ -48,40 +99,18 @@ const SignUpPage = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
+        setError(""); // Clear error once image is uploaded
       };
       reader.readAsDataURL(file);
     }
   };
-
-  // Inside SignUpPage handleFinalSubmit
-const handleFinalSubmit = (e) => {
-  e.preventDefault();
-  const studentData = {
-    ...formData, // name, email, phone, dob, address, class
-    id: `ASC-${Math.floor(1000 + Math.random() * 9000)}`,
-    profileImage: imagePreview || "/images/director.jpg", // Use uploaded image or fallback
-    joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-    attendance: "100%",
-    gpa: "N/A",
-  };
-
-  localStorage.setItem("isLoggedIn", "true");
-  localStorage.setItem("student", JSON.stringify(studentData));
-  
-  // Force a window refresh or custom event if needed, but router.push is usually enough
-  router.push("/profile");
-};
 
   return (
     <section className="min-h-screen bg-white flex flex-col lg:flex-row overflow-x-hidden">
       {/* Branding Side (Desktop) */}
       <div className="hidden lg:flex lg:w-1/2 bg-[#1F1A55] relative p-12 xl:p-16 flex-col justify-between overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img
-            src="/images/hero2.jpg"
-            alt="Afaq School"
-            className="w-full h-full object-cover opacity-20"
-          />
+          <img src="/images/hero2.jpg" alt="Afaq School" className="w-full h-full object-cover opacity-20" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#1F1A55]/40 to-[#1F1A55]" />
         </div>
 
@@ -97,13 +126,12 @@ const handleFinalSubmit = (e) => {
         </div>
 
         <div className="relative z-10 max-w-md">
-          {/* Progress Indicator */}
           <div className="flex gap-2 mb-6">
             {[1, 2, 3].map((i) => (
               <div key={i} className={`h-1 w-12 rounded-full transition-all duration-500 ${step >= i ? "bg-[#9C1D20]" : "bg-white/10"}`} />
             ))}
           </div>
-          <h2 className="text-white text-[40px] xl:text-[50px] font-bold leading-tight tracking-tighter uppercase mb-4">
+          <h2 className="text-white text-[40px] xl:text-[50px] font-bold leading-tight tracking-tighter uppercase mb-4 transition-all">
             {step === 1 && "Start Your Journey."}
             {step === 2 && "Tell us about yourself."}
             {step === 3 && "Complete your profile."}
@@ -111,9 +139,7 @@ const handleFinalSubmit = (e) => {
           <p className="text-white/60 text-lg">Step {step} of 3</p>
         </div>
 
-        <div className="relative z-10 text-[10px] font-bold text-white/40 uppercase tracking-widest">
-          © 2026 Afaq School Gulabad
-        </div>
+        <div className="relative z-10 text-[10px] font-bold text-white/40 uppercase tracking-widest">© 2026 Afaq School Gulabad</div>
       </div>
 
       {/* Form Side */}
@@ -126,15 +152,22 @@ const handleFinalSubmit = (e) => {
             </button>
           )}
 
-          <div className="mb-10">
+          <div className="mb-8">
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#9C1D20] block mb-2">Student Portal</span>
             <h3 className="text-3xl font-bold tracking-tighter text-[#1F1A55] uppercase">
               {step === 1 ? "Credentials" : step === 2 ? "Student Info" : "Identity"}
             </h3>
           </div>
 
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-            
+          {/* ERROR ALERT */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-[#9C1D20] flex items-center gap-3 animate-pulse">
+              <AlertCircle size={18} className="text-[#9C1D20] shrink-0" />
+              <p className="text-[10px] font-bold text-[#9C1D20] uppercase tracking-wider">{error}</p>
+            </div>
+          )}
+
+          <form className="space-y-6">
             {/* STEP 1: ACCOUNT */}
             {step === 1 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
@@ -143,7 +176,7 @@ const handleFinalSubmit = (e) => {
                 <div className="space-y-2 group">
                   <label className="text-[10px] font-black uppercase text-gray-400 group-focus-within:text-[#9C1D20]">Password</label>
                   <div className="flex items-center border-b-2 border-gray-100 group-focus-within:border-[#9C1D20] py-3">
-                    <Lock size={18} className="text-gray-300 mr-4" />
+                    <Lock size={18} className="text-gray-300 mr-4 group-focus-within:text-[#9C1D20]" />
                     <input
                       name="password"
                       type={showPassword ? "text" : "password"}
@@ -157,7 +190,7 @@ const handleFinalSubmit = (e) => {
                     </button>
                   </div>
                 </div>
-                <PrimaryButton onClick={() => setStep(2)}>Continue <ArrowRight size={16} /></PrimaryButton>
+                <PrimaryButton type="button" onClick={handleNextStep}>Continue <ArrowRight size={16} /></PrimaryButton>
               </div>
             )}
 
@@ -168,7 +201,7 @@ const handleFinalSubmit = (e) => {
                 <InputField icon={Calendar} label="Date of Birth" name="dob" type="date" value={formData.dob} onChange={handleChange} />
                 <InputField icon={GraduationCap} label="Admission Class" name="class" value={formData.class} onChange={handleChange} placeholder="e.g. 10th Grade" />
                 <InputField icon={MapPin} label="Home Address" name="address" value={formData.address} onChange={handleChange} placeholder="Full address details" />
-                <PrimaryButton onClick={() => setStep(3)}>Almost Done <ArrowRight size={16} /></PrimaryButton>
+                <PrimaryButton type="button" onClick={handleNextStep}>Almost Done <ArrowRight size={16} /></PrimaryButton>
               </div>
             )}
 
@@ -185,46 +218,32 @@ const handleFinalSubmit = (e) => {
                       </div>
                     )}
                   </div>
-                  <button 
-                    type="button"
-                    onClick={() => fileInputRef.current.click()}
-                    className="absolute bottom-0 right-0 bg-[#9C1D20] text-white p-3 rounded-full border-4 border-white hover:scale-110 transition-transform shadow-lg"
-                  >
+                  <button type="button" onClick={() => fileInputRef.current.click()} className="absolute bottom-0 right-0 bg-[#9C1D20] text-white p-3 rounded-full border-4 border-white hover:scale-110 transition-transform shadow-lg">
                     <Camera size={18} />
                   </button>
                   <input type="file" ref={fileInputRef} hidden accept="image/*" onChange={handleImageChange} />
                 </div>
                 
                 <div className="bg-[#F8F9FB] p-4 rounded-2xl border border-dashed border-gray-200">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase leading-relaxed">
-                    Upload a clear passport-sized photo for your digital student ID.
-                  </p>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase leading-relaxed">Upload a clear photo to complete your registration.</p>
                 </div>
 
-                <PrimaryButton onClick={handleFinalSubmit}>Complete Registration <ArrowRight size={16} /></PrimaryButton>
+                <PrimaryButton type="button" onClick={handleFinalSubmit}>Complete Registration <ArrowRight size={16} /></PrimaryButton>
               </div>
             )}
           </form>
-
-          {step === 1 && (
-            <div className="mt-8 text-center pt-6 border-t border-gray-50">
-              <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">
-                Already registered? <Link href="/login" className="text-[#9C1D20] font-black underline underline-offset-4 ml-1">Login</Link>
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </section>
   );
 };
 
-// Internal Helper Components
+// Internal Helpers
 const InputField = ({ icon: Icon, label, ...props }) => (
-  <div className="space-y-2 group">
+  <div className="space-y-2 group text-left">
     <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-focus-within:text-[#9C1D20] transition-colors">{label}</label>
     <div className="flex items-center border-b-2 border-gray-100 group-focus-within:border-[#9C1D20] transition-all py-3">
-      <Icon size={18} className="text-gray-300 mr-4" />
+      <Icon size={18} className="text-gray-300 mr-4 group-focus-within:text-[#9C1D20]" />
       <input {...props} className="w-full bg-transparent border-none outline-none text-[#1F1A55] font-bold placeholder:text-gray-200 text-sm" />
     </div>
   </div>
